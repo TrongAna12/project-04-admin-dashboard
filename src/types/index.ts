@@ -196,3 +196,12 @@ export type Employee = BaseEntity & {
   status: "active" | "inactive";
   lastLogin?: string;
 };
+
+export type {
+  SaleOrder,
+  SaleOrderApproved,
+  SaleOrderListResponse,
+  SaleOrderQueryParams,
+  SaleOrderSortField,
+  SortDirection,
+} from "./saleOrder";

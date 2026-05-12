@@ -6,6 +6,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 
 import { ThemeProvider } from "./ThemeProvider";
 
@@ -30,6 +31,7 @@ export function RootProvider({
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         {children}
+        <Toaster richColors closeButton position="top-right" />
       </ThemeProvider>
     </QueryClientProvider>
   );

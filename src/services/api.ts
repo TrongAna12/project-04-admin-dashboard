@@ -12,7 +12,11 @@ import type {
   TopProduct,
   PaginatedResponse,
   Message,
+  SaleOrder,
+  SaleOrderListResponse,
+  SaleOrderQueryParams,
 } from "@/types";
+import axios from "axios";
 import { delay } from "@/lib/utils";
 
 const mockAuthUsers: AuthUser[] = [
@@ -109,7 +113,7 @@ const mockProducts: Product[] = [
     reviews: 328,
     createdAt: "2024-01-01",
     updatedAt: "2024-05-01",
-    image: "https://via.placeholder.com/300x300?text=Headphones",
+    image: "https://myhypergear.com/cdn/shop/products/15613_HYG_Vibe_Wireless_Headphones_White_001.jpg?v=1644943914",
   },
   {
     id: 2,
@@ -123,7 +127,7 @@ const mockProducts: Product[] = [
     reviews: 245,
     createdAt: "2024-01-05",
     updatedAt: "2024-05-01",
-    image: "https://via.placeholder.com/300x300?text=Charger",
+    image: "https://myhypergear.com/cdn/shop/products/15613_HYG_Vibe_Wireless_Headphones_White_001.jpg?v=1644943914",
   },
   {
     id: 3,
@@ -137,7 +141,7 @@ const mockProducts: Product[] = [
     reviews: 156,
     createdAt: "2024-02-01",
     updatedAt: "2024-05-01",
-    image: "https://via.placeholder.com/300x300?text=TShirt",
+    image: "https://myhypergear.com/cdn/shop/products/15613_HYG_Vibe_Wireless_Headphones_White_001.jpg?v=1644943914",
   },
   {
     id: 4,
@@ -151,7 +155,7 @@ const mockProducts: Product[] = [
     reviews: 412,
     createdAt: "2024-01-15",
     updatedAt: "2024-05-01",
-    image: "https://via.placeholder.com/300x300?text=Keyboard",
+    image: "https://myhypergear.com/cdn/shop/products/15613_HYG_Vibe_Wireless_Headphones_White_001.jpg?v=1644943914",
   },
   {
     id: 5,
@@ -165,7 +169,7 @@ const mockProducts: Product[] = [
     reviews: 198,
     createdAt: "2024-02-10",
     updatedAt: "2024-05-01",
-    image: "https://via.placeholder.com/300x300?text=Webcam",
+    image: "https://myhypergear.com/cdn/shop/products/15613_HYG_Vibe_Wireless_Headphones_White_001.jpg?v=1644943914",
   },
 ];
 
@@ -476,4 +480,32 @@ export async function searchProducts(query: string): Promise<Product[]> {
   return mockProducts.filter((product) =>
     product.name.toLowerCase().includes(query.toLowerCase())
   );
+}
+
+export async function getSaleOrders(
+  params: SaleOrderQueryParams
+): Promise<SaleOrderListResponse> {
+  const searchParams = new URLSearchParams({
+    page: String(params.page),
+    pageSize: String(params.pageSize),
+    sortBy: params.sortBy,
+    sortDirection: params.sortDirection,
+  });
+
+  if (params.search) searchParams.set("search", params.search);
+  if (params.approved) searchParams.set("approved", params.approved);
+  if (params.orderType) searchParams.set("orderType", params.orderType);
+  if (params.orderSource) searchParams.set("orderSource", params.orderSource);
+
+  const response = await axios.get<SaleOrderListResponse>(
+    `/api/orders?${searchParams.toString()}`
+  );
+
+  return response.data;
+}
+
+export async function getSaleOrder(saleOrderId: number): Promise<SaleOrder> {
+  const response = await axios.get<SaleOrder>(`/api/orders/${saleOrderId}`);
+
+  return response.data;
 }
