@@ -15,6 +15,8 @@ import type {
   SaleOrder,
   SaleOrderListResponse,
   SaleOrderQueryParams,
+  ProductListResponse,
+  ProductQueryParams,
 } from "@/types";
 import axios from "axios";
 import { delay } from "@/lib/utils";
@@ -33,6 +35,21 @@ const mockAuthUsers: AuthUser[] = [
 const mockOtpCode = "123456";
 
 // Mock Data
+type MockProduct = {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: "active" | "inactive" | "discontinued";
+  rating: number;
+  reviews: number;
+  createdAt: string;
+  updatedAt: string;
+  image: string;
+};
+
 const mockUsers: User[] = [
   {
     id: 1,
@@ -100,7 +117,7 @@ const mockUsers: User[] = [
   },
 ];
 
-const mockProducts: Product[] = [
+const mockProducts: MockProduct[] = [
   {
     id: 1,
     name: "Wireless Headphones",
@@ -255,17 +272,13 @@ export async function getUsers(page = 1, limit = 10): Promise<PaginatedResponse<
   };
 }
 
-export async function getProductData(page = 1, limit = 10): Promise<PaginatedResponse<Product>> {
-  await delay(500);
-  const start = (page - 1) * limit;
-  const end = start + limit;
-  return {
-    data: mockProducts.slice(start, end),
-    total: mockProducts.length,
+export async function getProductData(page = 1, limit = 10): Promise<ProductListResponse> {
+  return getProducts({
     page,
     pageSize: limit,
-    pages: Math.ceil(mockProducts.length / limit),
-  };
+    sortBy: "productId",
+    sortDirection: "desc",
+  });
 }
 
 export async function getOrders(page = 1, limit = 10): Promise<PaginatedResponse<Order>> {
@@ -476,10 +489,41 @@ export async function getCustomers(page = 1, limit = 10): Promise<PaginatedRespo
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
-  await delay(300);
-  return mockProducts.filter((product) =>
-    product.name.toLowerCase().includes(query.toLowerCase())
+  const response = await getProducts({
+    page: 1,
+    pageSize: 20,
+    search: query,
+    sortBy: "productName",
+    sortDirection: "asc",
+  });
+
+  return response.data;
+}
+
+export async function getProducts(
+  params: ProductQueryParams
+): Promise<ProductListResponse> {
+  const searchParams = new URLSearchParams({
+    page: String(params.page),
+    pageSize: String(params.pageSize),
+    sortBy: params.sortBy,
+    sortDirection: params.sortDirection,
+  });
+
+  if (params.search) searchParams.set("search", params.search);
+  if (params.status) searchParams.set("status", params.status);
+
+  const response = await axios.get<ProductListResponse>(
+    `/api/products?${searchParams.toString()}`
   );
+
+  return response.data;
+}
+
+export async function getProduct(productId: number): Promise<Product> {
+  const response = await axios.get<Product>(`/api/products/${productId}`);
+
+  return response.data;
 }
 
 export async function getSaleOrders(

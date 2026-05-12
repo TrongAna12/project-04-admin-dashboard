@@ -27,19 +27,6 @@ export type User = BaseEntity & {
   lastLogin?: string;
 };
 
-// Product Types
-export type Product = BaseEntity & {
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  stock: number;
-  image?: string;
-  status: "active" | "inactive" | "discontinued";
-  rating: number;
-  reviews: number;
-};
-
 // Order Types
 export type OrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "returned";
 
@@ -196,6 +183,15 @@ export type Employee = BaseEntity & {
   status: "active" | "inactive";
   lastLogin?: string;
 };
+
+export type {
+  Product,
+  ProductListResponse,
+  ProductQueryParams,
+  ProductSortDirection,
+  ProductSortField,
+  ProductStatus,
+} from "./product";
 
 export type {
   SaleOrder,

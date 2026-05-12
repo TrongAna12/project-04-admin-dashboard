@@ -392,7 +392,7 @@ export default function OrdersPage() {
               />
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="flex flex-col gap-2 sm:flex-row ">
               <Select
                 value={approved}
                 onValueChange={(value) =>
